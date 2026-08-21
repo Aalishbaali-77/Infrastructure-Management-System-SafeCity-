@@ -130,11 +130,14 @@ Full details — PostgreSQL setup, what each seed command does, running tests, c
 ---
 
 ## Screenshots
+<img width="959" height="415" alt="user m" src="https://github.com/user-attachments/assets/36459b4a-59f9-4c36-a7b2-be263908181d" />
+<img width="955" height="404" alt="ssy deign" src="https://github.com/user-attachments/assets/49b77d83-08ee-40ce-a864-410ab5544b97" />
+<img width="958" height="369" alt="Proj cre" src="https://github.com/user-attachments/assets/865cd63f-c9e9-46af-bbbc-8b971c4bf48f" />
+<img width="950" height="400" alt="login" src="https://github.com/user-attachments/assets/a91ded51-7b44-4bc7-b55c-79104ffb7263" />
 
-*(Add screenshots of the dashboard, deviation workflow, and BOQ variance view here)*
 
 ---
 
 ## License
 
-This project is proprietary and developed for a government client. This README is shared for portfolio/demonstration purposes only.
+This project is proprietary and developed for an organization. This README is shared for portfolio/demonstration purposes only.
