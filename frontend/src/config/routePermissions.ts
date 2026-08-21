@@ -1,0 +1,18 @@
+export const ROUTE_PERMISSIONS: Record<string, string[]> = {
+  '/projects': ['EXEC', 'HOD', 'DIR', 'SYSTEM_ADMIN', 'AUDITOR'],
+  '/sites': ['EXEC', 'HOD', 'DIR', 'SITE_ENG', 'CONTRACTOR', 'SYSTEM_ADMIN', 'AUDITOR'],
+  '/contractors': ['HOD', 'DIR', 'SYSTEM_ADMIN', 'AUDITOR'],
+  '/boq': ['EXEC', 'HOD', 'DIR', 'SYSTEM_ADMIN', 'AUDITOR'],
+  '/daily-progress': ['SITE_ENG', 'CONTRACTOR', 'HOD', 'DIR', 'SYSTEM_ADMIN', 'AUDITOR'],
+  '/admin/progress-tasks': ['HOD', 'DIR', 'SYSTEM_ADMIN'],
+  '/workflows': ['EXEC', 'HOD', 'DIR', 'SYSTEM_ADMIN', 'AUDITOR'],
+  '/deviations': ['EXEC', 'HOD', 'DIR', 'SITE_ENG', 'CONTRACTOR', 'QA', 'SYSTEM_ADMIN', 'AUDITOR'],
+  '/tasks': ['SITE_ENG', 'CONTRACTOR', 'HOD', 'DIR', 'SYSTEM_ADMIN', 'AUDITOR'],
+  '/acceptance-tests': ['HOD', 'SITE_ENG', 'QA', 'SYSTEM_ADMIN', 'AUDITOR'],
+  '/snag-list': ['HOD', 'SITE_ENG', 'QA', 'SYSTEM_ADMIN', 'AUDITOR'],
+  '/field-logs': ['EXEC', 'HOD', 'SITE_ENG', 'CONTRACTOR', 'SYSTEM_ADMIN', 'AUDITOR'],
+  '/variation-orders': ['HOD', 'DIR', 'SYSTEM_ADMIN', 'AUDITOR'],
+  '/ipc': ['HOD', 'DIR', 'SYSTEM_ADMIN', 'AUDITOR'],
+  '/inventory': ['HOD', 'SITE_ENG', 'CONTRACTOR', 'QA', 'SYSTEM_ADMIN', 'AUDITOR'],
+  '/fac-readiness': ['HOD', 'DIR', 'SYSTEM_ADMIN', 'AUDITOR'],
+};

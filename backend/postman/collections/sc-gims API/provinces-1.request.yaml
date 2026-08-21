@@ -1,0 +1,9 @@
+$kind: http-request
+name: provinces
+description: ""
+url: http://127.0.0.1:8000/api/v1/provinces/
+method: POST
+body:
+  type: json
+  content: "{\r\n    \"name\": \"Sindh\"\r\n}"
+order: 4110104211918636

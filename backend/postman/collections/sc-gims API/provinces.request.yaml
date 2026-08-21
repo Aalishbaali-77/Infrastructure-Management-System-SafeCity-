@@ -1,0 +1,6 @@
+$kind: http-request
+name: provinces
+description: ""
+url: http://127.0.0.1:8000/api/v1/provinces/
+method: GET
+order: 4044579511517902

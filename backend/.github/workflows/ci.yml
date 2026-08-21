@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "backend/**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: sc_gims_test
+          POSTGRES_USER: sc_gims_user
+          POSTGRES_PASSWORD: testpassword
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install ruff pytest pytest-django
+
+      - name: Run ruff
+        run: ruff check .
+
+      - name: Check for missing migrations
+        env:
+          DEBUG: "True"
+          SECRET_KEY: "ci-test-key"
+          DB_NAME: sc_gims_test
+          DB_USER: sc_gims_user
+          DB_PASSWORD: testpassword
+          DB_HOST: localhost
+          DB_PORT: 5432
+        run: python manage.py makemigrations --check --dry-run
+
+      - name: Run migrations
+        env:
+          DEBUG: "True"
+          SECRET_KEY: "ci-test-key"
+          DB_NAME: sc_gims_test
+          DB_USER: sc_gims_user
+          DB_PASSWORD: testpassword
+          DB_HOST: localhost
+          DB_PORT: 5432
+        run: python manage.py migrate
+
+      - name: Run pytest
+        env:
+          DEBUG: "True"
+          SECRET_KEY: "ci-test-key"
+          DB_NAME: sc_gims_test
+          DB_USER: sc_gims_user
+          DB_PASSWORD: testpassword
+          DB_HOST: localhost
+          DB_PORT: 5432
+        run: pytest
