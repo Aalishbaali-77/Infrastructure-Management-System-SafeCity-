@@ -1,63 +1,140 @@
 # SC-GIMS — Safe Cities Government Infrastructure Monitoring System
 
-A digital platform for tracking government infrastructure rollouts — CCTV, fiber, networking, and control room deployments — across project sites in Sindh, Punjab, and Balochistan.
+A full-stack platform for managing large-scale government infrastructure rollouts (CCTV, fiber, networking, control rooms) across multiple provinces — from BOQ setup through daily execution, deviation tracking, approvals, and reporting.
 
-- [`frontend/`](frontend/) — Next.js 14 + TypeScript + MUI web app
-- [`backend/`](backend/) — Django REST Framework API
+> **Note:** This is a private organizational project. This repository/README showcases my individual contribution as lead developer and is shared for portfolio purposes. Proprietary business logic, credentials, and internal documentation are not included.
 
-See [`frontend/README.md`](frontend/README.md) for full product background and [`backend/README.md`](backend/README.md) for backend internals.
+---
 
-## Quick start (Docker)
+## What It Does
 
-The fastest way to run the whole stack — no local Python, Node, PostgreSQL, or Redis installation required.
+SC-GIMS digitizes the full lifecycle of a multi-site infrastructure project:
 
-**Requirements:** [Docker Desktop](https://www.docker.com/products/docker-desktop/) (with Docker Compose).
+- **BOQ Management** — Excel-based bill of quantities import, versioning, and variance tracking
+- **Daily Progress Tracking** — field engineers log quantity, subtasks, and KPIs per site
+- **Deviation / NCR Management** — automatic detection of quantity overruns against plan, plus manual issue reporting, routed through a role-based multi-stage approval workflow
+- **Role-Based Dashboards** — tailored views for Executives, HODs, Directors, Site Engineers, Contractors, QA Inspectors, and System Admins
+- **Province/Project/Site Hierarchy** — full geographic and organizational drill-down across the entire dataset
+- **Real-Time Data Visualization** — variance charts, deviation trends, and progress rollups, all driven by live backend data (no mock/dummy data anywhere in the UI)
+
+---
+
+## My Role
+
+Lead developer on the project — primarily frontend, increasingly full-stack. Responsibilities include:
+
+- Architecting the Next.js frontend (App Router, feature-sliced structure)
+- Designing and building the Deviation/NCR module end-to-end: auto-detection engine, approval state machine, RBAC-scoped API, and a full analytics dashboard
+- Enforcing data scoping and permissions consistently across every module (backend-verified, not just UI-hidden)
+- Collaborating with a backend partner on Django REST API design
+
+---
+
+## Tech Stack
+
+**Frontend**
+- Next.js 16 (App Router, Turbopack) + TypeScript
+- MUI v6 for component library
+- Redux Toolkit + RTK Query for state and API caching
+- Redux Saga for complex async flows
+- React Hook Form + Zod for form validation
+- Recharts for data visualization
+- Playwright for E2E testing
+
+**Backend**
+- Django REST Framework
+- PostgreSQL
+- Celery + Redis for background jobs and caching
+
+---
+
+## Architecture Highlights
+
+- **Modular monolith** — feature-sliced modules (`boq`, `progress`, `deviations`, etc.) with clear API boundaries, designed to be microservice-extractable later
+- **Server-enforced RBAC** — permissions checked at the API layer (not just hidden in the UI), configurable per role through an admin panel without code changes
+- **Signal-driven automation** — e.g. daily progress entries automatically trigger deviation detection via Django signals, comparing logged quantities against BOQ-defined tolerances
+- **Province-scoped sequential numbering** — deviation records get human-readable, audit-friendly reference numbers generated safely under concurrent access
+
+---
+
+## Running Locally
+
+Two ways to run the project: **Docker** (one command, nothing to install but Docker itself) or **native** (Python + Node installed directly on your machine, better for IDE debugging).
+
+### Option A — Docker (recommended)
+
+**Requirements:** [Docker Desktop](https://www.docker.com/products/docker-desktop/) (includes Docker Compose).
 
 ```bash
-git clone <this-repo-url>
-cd "SC-GIMS (IM system)"
+git clone https://github.com/Aalishbaali-77/Infrastructure-Management-System-SafeCity-.git
+cd Infrastructure-Management-System-SafeCity-
 cp backend/.env.docker.example backend/.env.docker
 docker compose up --build
 ```
 
-This starts four containers:
+That single command starts four containers — PostgreSQL, Redis, the Django API, and the Next.js frontend — and on first boot automatically runs migrations and seeds baseline data (provinces, roles, permissions, and one test login per role).
 
 | Service | URL |
 |---|---|
-| Frontend (Next.js) | http://localhost:3001 |
+| Frontend | http://localhost:3001 |
 | Backend API | http://localhost:8000 |
-| Swagger docs | http://localhost:8000/docs/ |
+| Swagger / API docs | http://localhost:8000/docs/ |
 | PostgreSQL | localhost:5432 |
 
-On first boot the backend container automatically runs migrations and seeds baseline data (provinces, roles, permissions, and one test login per role — password `Test@1234`, e.g. `exec@scgims.test`). See [`backend/README.md`](backend/README.md#5-seed-baseline-data) for the full list of seeded users.
+Log in with any seeded role, e.g. `exec@scgims.test` / `Test@1234` (full list in [`backend/README.md`](backend/README.md#5-seed-baseline-data)).
 
-The frontend's default port (3000) is remapped to **3001** on the host to avoid clashing with other local dev servers. Override it if you like:
+The frontend's host port is remapped to **3001** to avoid clashing with other local dev servers on 3000 — override with `FRONTEND_PORT=xxxx docker compose up --build` if you'd rather use a different one. Both `backend/` and `frontend/` are mounted as live volumes, so code edits are picked up without rebuilding.
 
-```bash
-FRONTEND_PORT=4000 docker compose up --build
-```
-
-Both `backend/` and `frontend/` are mounted as live volumes, so code edits are picked up by the running dev servers without rebuilding the image.
-
-To stop everything:
+To stop:
 
 ```bash
-docker compose down          # keep the database volume
+docker compose down          # keep the database
 docker compose down -v       # also wipe the database
 ```
 
-## Running without Docker
+### Option B — Native (Python + Node installed locally)
 
-If you'd rather run each app natively (e.g. for IDE debugging), follow:
+Requires Python 3.12+, Node 20+, and a local PostgreSQL instance.
 
-- [`backend/README.md`](backend/README.md) — Python venv, local PostgreSQL, migrations, seeding
-- [`frontend/README.md`](frontend/README.md) — `npm install && npm run dev`
+**Backend:**
 
-## Tech stack
+```bash
+cd backend
+python -m venv venv
+venv\Scripts\activate            # or `source venv/bin/activate` on macOS/Linux
+pip install -r requirements.txt
+copy .env.example .env           # then fill in your local DB credentials
+python manage.py migrate
+python manage.py seed_provinces
+python manage.py seed_cities
+python manage.py seed_roles
+python manage.py seed_permissions
+python manage.py seed_rbac
+python manage.py seed_users
+python manage.py runserver 0.0.0.0:8000
+```
 
-| Layer | Technology |
-|---|---|
-| Frontend | Next.js 14 (App Router), TypeScript, MUI, Redux Toolkit + Saga, RTK Query, React Hook Form + Zod, Recharts |
-| Backend | Django + Django REST Framework, PostgreSQL, Redis/Celery (background jobs) |
-| Auth | JWT (djangorestframework-simplejwt) |
-| API docs | drf-spectacular (OpenAPI/Swagger) |
+**Frontend** (in a second terminal):
+
+```bash
+cd frontend
+npm install
+echo NEXT_PUBLIC_API_URL=http://localhost:8000 > .env.local
+npm run dev
+```
+
+The app runs at http://localhost:3000, talking to the API at http://localhost:8000.
+
+Full details — PostgreSQL setup, what each seed command does, running tests, creating a superuser — are in [`backend/README.md`](backend/README.md) and [`frontend/README.md`](frontend/README.md).
+
+---
+
+## Screenshots
+
+*(Add screenshots of the dashboard, deviation workflow, and BOQ variance view here)*
+
+---
+
+## License
+
+This project is proprietary and developed for a government client. This README is shared for portfolio/demonstration purposes only.
